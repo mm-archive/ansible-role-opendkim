@@ -1,0 +1,3 @@
+{% for item in opendkim_domains %}
+{{ item.selector }}._domainkey.{{ item.name }} {{ item.name }}:{{ item.selector }}:{{opendkim_dir_keys.path}}/{{ item.name }}/{{ item.selector }}.private
+{% endfor %}

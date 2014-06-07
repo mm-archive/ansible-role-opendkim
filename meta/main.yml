@@ -1,0 +1,5 @@
+---
+# file: roles/opendkim/meta/main.yml
+
+dependencies:
+  - { role: postfix }

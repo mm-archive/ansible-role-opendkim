@@ -1,0 +1,8 @@
+---
+# file: roles/opendkim/handlers/main.yml
+
+- name: Restart Postfix
+  service: name=postfix state=restarted enabled=yes
+
+- name: Restart Opendkim
+  service: name=opendkim state=restarted enabled=yes

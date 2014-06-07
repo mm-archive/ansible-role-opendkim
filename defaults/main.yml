@@ -1,0 +1,39 @@
+---
+# file: role/opendkim/defaults/main.yml
+
+#this list should be overridden
+opendkim_domains:
+  - name: example.org
+    selector: default
+
+#opendkim.conf defaults
+opendkim_auto_restart:         true
+opendkim_auto_restart_rate:    '10/1h'
+opendkim_umask:                '002'
+opendkim_syslog:               true
+opendkim_syslog_success:       true
+opendkim_log_why:              true
+opendkim_canonicalization:     'relaxed/simple'
+opendkim_mode:                 's'
+opendkim_signature_algorithm:  'rsa-sha256'
+opendkim_user:                 'opendkim'
+opendkim_group:                'opendkim'
+opendkim_oversign_headers:     'From'
+
+#paths
+opendkim_dir_postfix_chroot:
+  path: /var/spool/postfix
+opendkim_dir_run:
+  path: /var/run/opendkim
+  mode: '0755'
+opendkim_dir_postfix_run:
+  path: '{{ opendkim_dir_postfix_chroot.path }}{{ opendkim_dir_run.path }}'
+  mode: '0755'
+opendkim_dir_conf:
+  path: '/etc/opendkim'
+  mode: '0755'
+opendkim_dir_keys:
+  path: '{{ opendkim_dir_conf.path}}/keys'
+  mode: '0700'
+
+opendkim_file_socket: '/opendkim.sock'

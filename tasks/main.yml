@@ -1,0 +1,87 @@
+---
+# file: roles/opendkim/tasks/main.yml
+
+- name: Install Packages
+  apt: >
+    pkg={{ item }}
+    state=latest
+  with_items:
+    - opendkim
+    - opendkim-tools
+  notify:
+    - Restart Opendkim
+    - Restart Postfix
+
+- name: Create required folders
+  file: >
+    path='{{ item.path }}'
+    owner='{{ opendkim_user }}'
+    group='{{ opendkim_group }}'
+    mode='{{ item.mode }}'
+    state=directory
+  with_items:
+    - '{{ opendkim_dir_run }}'
+    - '{{ opendkim_dir_postfix_run }}'
+    - '{{ opendkim_dir_conf }}'
+    - '{{ opendkim_dir_keys }}'
+
+- name: Create key folders
+  file: >
+    path='{{ opendkim_dir_keys.path }}/{{ item.name }}'
+    owner='{{ opendkim_user }}'
+    group='{{ opendkim_group }}'
+    mode=0700
+    state=directory
+  with_items: opendkim_domains
+
+- name: Generate Private Keys
+  command: >
+    opendkim-genkey -s {{ item.selector }} -d {{ item.name }}
+    chdir={{ opendkim_dir_keys.path }}/{{ item.name }}
+    creates={{ opendkim_dir_keys.path }}/{{ item.name }}/{{ item.selector }}.private
+  with_items: opendkim_domains
+
+- name: Set key file permissions
+  file: >
+    path={{opendkim_dir_keys.path}}/{{ item.name }}/{{ item.selector }}.private
+    owner='{{ opendkim_user }}'
+    group='{{ opendkim_group }}'
+    mode=0600
+    state=file
+  with_items: opendkim_domains
+
+- name: Load Opendkim files
+  template: >
+    src={{ item.src }}
+    dest={{ item.dest }}
+    owner='{{ opendkim_user }}'
+    group='{{ opendkim_group }}'
+    mode=0644
+  with_items:
+        - { src: 'KeyTable',          dest: '{{ opendkim_dir_conf.path }}/KeyTable' }
+        - { src: 'SigningTable',      dest: '{{ opendkim_dir_conf.path }}/SigningTable' }
+        - { src: 'TrustedHosts',      dest: '{{ opendkim_dir_conf.path }}/TrustedHosts' }
+        - { src: 'etc_opendkim.conf', dest: '/etc/opendkim.conf' }
+  notify:
+    - Restart Opendkim
+
+- name: Connect to Postfix
+  lineinfile: >
+    dest=/etc/postfix/main.cf
+    regexp='{{ item.reg }}'
+    line='{{ item.line }}'
+    state=present
+  with_items:
+    - reg: '^milter_protocol'
+      line: 'milter_protocol = 6'
+    - reg: '^milter_default_action'
+      line: 'milter_default_action = accept'
+    - reg: '^smtpd_milters'
+      line: 'smtpd_milters = unix:{{ opendkim_dir_run.path }}{{ opendkim_file_socket }}'
+    - reg: '^non_smtpd_milters'
+      line: 'non_smtpd_milters = unix:{{ opendkim_dir_run.path }}{{ opendkim_file_socket }}'
+  notify:
+    - Restart Postfix
+
+- name: Add Postfix to opendkim group
+  user: name=postfix groups=opendkim append=yes
