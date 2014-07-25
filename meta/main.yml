@@ -2,4 +2,6 @@
 # file: roles/opendkim/meta/main.yml
 
 dependencies:
-  - { role: postfix }
+  - { role: mi11er.postfix }
+
+version: 1.0.0
