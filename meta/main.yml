@@ -1,7 +1,20 @@
 ---
 # file: roles/opendkim/meta/main.yml
 
+galaxy_info:
+  author: Matthew Miller
+  description: A base opendkim config
+  company:
+  license: license (MIT)
+  min_ansible_version: 1.6
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+  categories:
+    - system
+
 dependencies:
-  - { role: mi11er.postfix }
+  - { role: matthewmi11er.postfix }
 
 version: 1.0.0
