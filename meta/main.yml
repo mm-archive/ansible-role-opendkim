@@ -15,6 +15,5 @@ galaxy_info:
     - system
 
 dependencies:
-  - { role: matthewmi11er.postfix }
+  - MatthewMi11er.postfix
 
-version: 1.0.0

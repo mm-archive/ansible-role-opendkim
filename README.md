@@ -12,14 +12,14 @@ A base opendkim config
 
 ## Dependencies
 
-matthewmi11er.postfix
+MatthewMi11er.postfix
 
 ## Example Playbook
 
 ```yml
     - hosts: servers
       roles:
-         - { role: matthewmi11er.opendkim }
+         - { role: MatthewMi11er.opendkim }
 ```
 
 ## License
