@@ -5,6 +5,8 @@
 opendkim_domains:
   - name: example.org
     selector: default
+    private_key: "" # optional
+    public_key:  "" # optional
 
 #opendkim.conf defaults
 opendkim_auto_restart:         true
@@ -37,3 +39,7 @@ opendkim_dir_keys:
   mode: '0700'
 
 opendkim_file_socket: '/opendkim.sock'
+
+#misc
+opendkim_save_keys_locally: false
+opendkim_local_keys_path: "{{ inventory_dir }}/../_private/keys"  
