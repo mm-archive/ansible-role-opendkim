@@ -42,4 +42,4 @@ opendkim_file_socket: '/opendkim.sock'
 
 #misc
 opendkim_save_keys_locally: false
-opendkim_local_keys_path: "{{ inventory_dir }}/../_private/keys"  
+opendkim_local_keys_path: "{{ playbook_dir }}/_private/keys"  
